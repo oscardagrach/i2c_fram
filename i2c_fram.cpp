@@ -333,23 +333,51 @@ int main(int argc, char **argv)
 	if (ret) return ret;
 	if (argc < 2)
 	{
-		printf("Not enough args!\n");
+		printf("\nI2C FRAM Utility\n");
+		printf("----------------\n");
+		printf("by OscarDaGrach\n\n");
+		printf("read [16-bit addr]\n");
+		printf("write [16-bit addr] [data]\n");
+		printf("dump [16-bit addr] [len]\n");
+		printf("erase_all\n");
+		printf("read_image [16-bit addr] [len] [file]\n");
+		printf("write_image [16-bit addr] [file]\n");
+		printf("\n");
+
 		return 1;
 	}
 	if (strcmp("read", argv[1]) == 0)
 	{
+		if (argc != 3)
+		{
+			printf("Wrong args!\n");
+			printf("read [16-bit addr]\n");
+			return 1;
+		}
 		sscanf(argv[2], "%hx", &addr);
 		read_byte(addr);
 	}
 
 	if (strcmp("write", argv[1]) == 0)
 	{
+		if (argc != 4)
+		{
+			printf("Wrong args!\n");
+			printf("write [16-bit addr] [data]\n");
+			return 1;
+		}
 		sscanf(argv[2], "%hx", &addr);
 		sscanf(argv[3], "%hhx", &data);
 		write_byte(addr, data);
 	}
 	if (strcmp("dump", argv[1]) == 0)
 	{
+		if (argc != 4)
+		{
+			printf("Wrong args!\n");
+			printf("dump [16-bit addr] [len]\n");
+			return 1;
+		}
 		sscanf(argv[2], "%hx", &addr);
 		sscanf(argv[3], "%hx", &len);
 		dump_bytes(addr, len);
@@ -360,6 +388,12 @@ int main(int argc, char **argv)
 	}
 	if (strcmp("read_image", argv[1]) ==0)
 	{
+		if (argc != 5)
+		{
+			printf("Wrong args!\n");
+			printf("read_image [16-bit addr] [len] [file]\n");
+			return 1;
+		}
 		sscanf(argv[2], "%hx", &addr);
 		sscanf(argv[3], "%hx", &len);
 		sscanf(argv[4], "%s", file);
@@ -367,6 +401,12 @@ int main(int argc, char **argv)
 	}
 	if (strcmp("write_image", argv[1]) ==0)
 	{
+		if (argc != 4)
+		{
+			printf("Wrong args!\n");
+			printf("write_image [16-bit addr] [file]\n");
+			return 1;
+		}
 		sscanf(argv[2], "%hx", &addr);
 		sscanf(argv[3], "%s", file);
 		write_image(addr, file);
