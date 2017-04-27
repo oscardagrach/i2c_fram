@@ -86,7 +86,7 @@ int read_byte(uint16_t addr)
 	rsp = bcm2835_i2c_read(buf, 1);
 	if (rsp)
 	{
-		printf("Error reading chip! rsp: %d\n", rsp);
+		printf("Error reading from chip! rsp: %d\n", rsp);
 		return 1;
 	}
 	printf("Data: 0x%02hhX\n\n", buf[0]);
@@ -125,6 +125,12 @@ int write_byte(uint16_t addr, uint8_t data)
 	buf[2] = 0x00;
 	rsp = bcm2835_i2c_read(&buf[2], 1);
 
+	if (rsp)
+	{
+		printf("Failed to read back write data!\n");
+		return 1;
+	}
+
 	if (buf[2] != data)
 	{
 		printf("Write verification failed! %02hhx %02hhx\n", buf[2], data);
@@ -140,6 +146,7 @@ int dump_bytes(uint16_t addr, uint16_t len)
 	int err;
 	char buf[2] = {0};
 	char * data;
+	uint8_t rsp = 0;
 
 	err = check_boundary(3, addr, len);
 	if (err) return 1;
@@ -152,8 +159,18 @@ int dump_bytes(uint16_t addr, uint16_t len)
 	}
 	buf[0] = addr >> 8;
 	buf[1] = addr;
-	bcm2835_i2c_write(buf, 2);
-	bcm2835_i2c_read(data, len);
+	rsp = bcm2835_i2c_write(buf, 2);
+	if (rsp)
+	{
+		printf("Error setting address for dump!\n");
+		return 1;
+	}
+	rsp = bcm2835_i2c_read(data, len);
+	if (rsp)
+	{
+		printf("Error reading data for dump!\n");
+		return 1;
+	}
 
 	PRINT_DATA("[+] Dumping...\n", data, len);
 	printf("[+] DUMP OKAY!\n");
@@ -184,6 +201,7 @@ int read_image(uint16_t addr, uint16_t len, char *file)
 	FILE *outf;
 	char buf[2] = {0};
 	char * data;
+	uint8_t rsp = 0;
 
 	err = check_boundary(3, addr, len);
 	if (err) return 1;
@@ -196,10 +214,22 @@ int read_image(uint16_t addr, uint16_t len, char *file)
 	}
 
 	printf("Reading %d bytes to file %s\n", len, file);
+
 	buf[0] = addr >> 8;
 	buf[1] = addr;
-	bcm2835_i2c_write(buf, 2);
-	bcm2835_i2c_read(data, len);
+
+	rsp = bcm2835_i2c_write(buf, 2);
+	if (rsp)
+	{
+		printf("Error setting address for image read!\n");
+		return 1;
+	}
+	rsp = bcm2835_i2c_read(data, len);
+	if (rsp)
+	{
+		printf("Error reading data for image read!\n");
+		return 1;
+	}
 
 	outf = fopen(file, "wb");
 	if (!outf)
@@ -226,6 +256,7 @@ int write_image(uint16_t addr, char *file)
 	char * data;
 	uint16_t size = 0;
 	uint16_t result = 0;
+	uint8_t rsp = 0;
 
 	inf = fopen(file, "rb");
 	if (!inf)
@@ -261,7 +292,12 @@ int write_image(uint16_t addr, char *file)
 
 	data[0] = addr >> 8;
 	data[1] = addr;
-	bcm2835_i2c_write(data, size+2);
+	rsp = bcm2835_i2c_write(data, size+2);
+	if (rsp)
+	{
+		printf("Error writing data from image!\n");
+		return 1;
+	}
 	printf("\n[+] WRITE IMAGE OKAY!\n");
 	return 0;
 }
