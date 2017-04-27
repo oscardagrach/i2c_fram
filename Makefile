@@ -2,7 +2,7 @@ CC = g++
 INCLUDES = -I ./
 
 all:
-	$(CC) $(INCLUDES) fram.cpp -lbcm2835 -o fram
+	$(CC) $(INCLUDES) i2c_fram.cpp -lbcm2835 -o i2c_fram
 
 clean:
-	rm fram
+	rm i2c_fram
