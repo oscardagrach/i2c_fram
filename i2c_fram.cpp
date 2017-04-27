@@ -1,10 +1,3 @@
-/*
- * fram.cpp
- *
- *  Created on: Apr 26, 2017
- *      Author: ryan
- */
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
