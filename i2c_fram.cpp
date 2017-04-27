@@ -1,3 +1,10 @@
+/*
+ * fram.cpp
+ *
+ *  Created on: Apr 26, 2017
+ *      Author: ryan
+ */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -281,7 +288,7 @@ int write_image(uint16_t addr, char *file)
 	}
 	fclose(inf);
 
-	printf("Writing %d bytes from %s...\n", size-2, file);
+	printf("Writing %d bytes from %s...\n", size, file);
 
 	data[0] = addr >> 8;
 	data[1] = addr;
